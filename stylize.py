@@ -118,6 +118,8 @@ def main():
                 output_name = out_dir.joinpath(out_filename)
 
                 save_image(output, output_name)
+                content.close()
+                style.close()
                 pbar.update(1)
 
 if __name__ == '__main__':
