@@ -91,8 +91,13 @@ def main():
     with tqdm(total=len(content_paths) * args.num_styles) as pbar:
         for content_path in content_paths:
             for style_path in random.sample(styles, args.num_styles):
-                content = transform(Image.open(content_path).convert('RGB'))
-                style = transform(Image.open(style_path).convert('RGB'))
+                try:
+                    content = transform(Image.open(content_path).convert('RGB'))
+                    style = transform(Image.open(style_path).convert('RGB'))
+                except OSError as e:
+                    print('Skipping stylization of %s with %s due to error below' %(content_path, style_path))
+                    print(e)
+
                 style = style.to(device).unsqueeze(0)
                 content = content.to(device).unsqueeze(0)
                 with torch.no_grad():
