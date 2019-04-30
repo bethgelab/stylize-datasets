@@ -25,8 +25,27 @@ parser.add_argument('--alpha', type=float, default=1.0,
                           stylization. Should be between 0 and 1')
 parser.add_argument('--extensions', nargs='+', type=str, default=['png', 'jpeg', 'jpg'], help='List of image extensions to scan style and content directory for (case sensitive), default: png, jpeg, jpg')
 
+# Advanced options
+parser.add_argument('--content_size', type=int, default=0,
+                    help='New (minimum) size for the content image, \
+                    keeping the original size if set to 0')
+parser.add_argument('--style_size', type=int, default=512,
+                    help='New (minimum) size for the style image, \
+                    keeping the original size if set to 0')
+parser.add_argument('--crop', action='store_true',
+                    help='do center crop to create squared image')
+
 # random.seed(131213)
 
+def input_transform(size, crop):
+    transform_list = []
+    if size != 0:
+        transform_list.append(torchvision.transforms.Resize(size))
+    if crop:
+        transform_list.append(torchvision.transforms.CenterCrop(size))
+    transform_list.append(torchvision.transforms.ToTensor())
+    transform = torchvision.transforms.Compose(transform_list)
+    return transform
 
 def style_transfer(vgg, decoder, content, style, alpha=1.0):
     assert (0.0 <= alpha <= 1.0)
@@ -52,7 +71,6 @@ def main():
     assert len(extensions) > 0, 'No file extensions specified'
     content_dir = Path(content_dir)
     content_dir = content_dir.resolve()
-    transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
     assert content_dir.is_dir(), 'Content directory not found'
     dataset = []
     for ext in extensions:
@@ -86,6 +104,9 @@ def main():
     vgg.to(device)
     decoder.to(device)
 
+    content_tf = input_transform(args.content_size, args.crop)
+    style_tf = input_transform(args.style_size, args.crop)
+
 
     # actual style transfer as in AdaIN
     with tqdm(total=len(content_paths) * args.num_styles) as pbar:
@@ -99,8 +120,8 @@ def main():
                     print(e)
                     continue
 
-                content = transform(content_img)
-                style = transform(style_img)
+                content = content_tf(content_img)
+                style = style_tf(style_img)
                 style = style.to(device).unsqueeze(0)
                 content = content.to(device).unsqueeze(0)
                 with torch.no_grad():
