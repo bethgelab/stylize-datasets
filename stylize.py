@@ -92,12 +92,15 @@ def main():
         for content_path in content_paths:
             for style_path in random.sample(styles, args.num_styles):
                 try:
-                    content = transform(Image.open(content_path).convert('RGB'))
-                    style = transform(Image.open(style_path).convert('RGB'))
+                    content_img = Image.open(content_path).convert('RGB')
+                    style_img = Image.open(style_path).convert('RGB')
                 except OSError as e:
                     print('Skipping stylization of %s with %s due to error below' %(content_path, style_path))
                     print(e)
+                    continue
 
+                content = transform(content_img)
+                style = transform(style_img)
                 style = style.to(device).unsqueeze(0)
                 content = content.to(device).unsqueeze(0)
                 with torch.no_grad():
@@ -118,8 +121,8 @@ def main():
                 output_name = out_dir.joinpath(out_filename)
 
                 save_image(output, output_name)
-                content.close()
-                style.close()
+                content_img.close()
+                style_img.close()
                 pbar.update(1)
 
 if __name__ == '__main__':
