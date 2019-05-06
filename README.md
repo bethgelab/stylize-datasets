@@ -21,7 +21,7 @@ Feel free to open an issue in case there is any question.
     Arguments:
     - `--content_dir <CONTENT>` the top-level directory of the content image dataset (mandatory)
     - `--style_dir <STLYE>` the top-level directory of the style images (mandatory)
-    - `--output_dir <OUTPUT>` the directory where the stylized dataset will be stored (optional, default: `output/`)
+    - `--output-dir <OUTPUT>` the directory where the stylized dataset will be stored (optional, default: `output/`)
     - `--num-styles <N>` number of stylizations to create for each content image (optional, default: `1`)
     - `--alpha <A>` Weight that controls the strength of stylization, should be between 0 and 1 (optional, default: `1`)
     - `--extensions <EX0> <EX1> ...` list of image extensions to scan style and content directory for (optional, default: `png, jpeg, jpg`). Note: this is case sensitive, `--extensions jpg` will not scan for files ending on `.JPG`. Image types must be compatible with PIL's `Image.open()` ([Documentation](https://pillow.readthedocs.io/en/5.1.x/handbook/image-file-formats.html))
