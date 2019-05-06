@@ -93,7 +93,6 @@ def main():
     vgg = net.vgg
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    #device = "cuda"
 
     decoder.eval()
     vgg.eval()
