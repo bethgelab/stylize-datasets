@@ -14,6 +14,7 @@ Feel free to open an issue in case there is any question.
     - tqdm
 - Download and convert the models:
     - for this step it is mandatory that your pytorch version is 0.4.0. Run `pip install torch==0.4.0` (preferrably in a container/virtual environment in order to not mess with your local pytorch installation)
+    - Get style images Download train.zip from [Kaggle's painter-by-numbers dataset](https://www.kaggle.com/c/painter-by-numbers/data)
     - run `bash download_convert_models.sh`
 - to stylize a dataset, run `python stylize.py`. Arguments:
     - `--content-dir <CONTENT>` the top-level directory of the content image dataset (mandatory)
