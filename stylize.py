@@ -12,9 +12,9 @@ from torchvision.utils import save_image
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='This script applies the AdaIN style transfer method to arbitrary datasets.')
-parser.add_argument('--content-dir', type=str,
+parser.add_argument('--content_dir', type=str,
                     help='Directory path to a batch of content images')
-parser.add_argument('--style-dir', type=str,
+parser.add_argument('--style_dir', type=str,
                     help='Directory path to a batch of style images')
 parser.add_argument('--output-dir', type=str, default='output',
                     help='Directory to save the output images')
@@ -93,6 +93,7 @@ def main():
     vgg = net.vgg
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    #device = "cuda"
 
     decoder.eval()
     vgg.eval()
