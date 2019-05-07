@@ -82,7 +82,7 @@ def lua_recursive_model(module, seq):
                              ceil_mode=m.ceil_mode)
             add_submodule(seq, n)
         elif name == 'SpatialUpSamplingNearest':
-            n = nn.UpsamplingNearest2d(scale_factor=m.scale_factor)
+            n = nn.Upsample(scale_factor=m.scale_factor) #changed
             add_submodule(seq, n)
         elif name == 'View':
             n = Lambda(lambda x: x.view(x.size(0), -1))
@@ -176,7 +176,7 @@ def lua_recursive_source(module):
             s += ['nn.AvgPool2d({},{},{},ceil_mode={}),#AvgPool2d'.format(
                 (m.kW, m.kH), (m.dW, m.dH), (m.padW, m.padH), m.ceil_mode)]
         elif name == 'SpatialUpSamplingNearest':
-            s += ['nn.UpsamplingNearest2d(scale_factor={})'.format(
+            s += ['nn.Upsample(scale_factor={})'.format(
                 m.scale_factor)]
         elif name == 'View':
             s += ['Lambda(lambda x: x.view(x.size(0),-1)), # View']
