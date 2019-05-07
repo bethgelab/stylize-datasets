@@ -141,7 +141,7 @@ def main():
                 out_filename = content_name + '-stylized-' + style_name + content_path.suffix
                 output_name = out_dir.joinpath(out_filename)
 
-                save_image(output, output_name)
+                save_image(output, output_name, padding=0) #default image padding is 2.
                 content_img.close()
                 style_img.close()
                 pbar.update(1)
