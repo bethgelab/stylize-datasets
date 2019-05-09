@@ -82,7 +82,7 @@ def lua_recursive_model(module, seq):
                              ceil_mode=m.ceil_mode)
             add_submodule(seq, n)
         elif name == 'SpatialUpSamplingNearest':
-            n = nn.Upsample(scale_factor=m.scale_factor) #changed
+            n = nn.Upsample(scale_factor=m.scale_factor)
             add_submodule(seq, n)
         elif name == 'View':
             n = Lambda(lambda x: x.view(x.size(0), -1))

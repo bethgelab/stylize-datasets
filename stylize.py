@@ -12,9 +12,9 @@ from torchvision.utils import save_image
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='This script applies the AdaIN style transfer method to arbitrary datasets.')
-parser.add_argument('--content_dir', type=str,
+parser.add_argument('--content-dir', type=str,
                     help='Directory path to a batch of content images')
-parser.add_argument('--style_dir', type=str,
+parser.add_argument('--style-dir', type=str,
                     help='Directory path to a batch of style images')
 parser.add_argument('--output-dir', type=str, default='output',
                     help='Directory to save the output images')
@@ -26,10 +26,10 @@ parser.add_argument('--alpha', type=float, default=1.0,
 parser.add_argument('--extensions', nargs='+', type=str, default=['png', 'jpeg', 'jpg'], help='List of image extensions to scan style and content directory for (case sensitive), default: png, jpeg, jpg')
 
 # Advanced options
-parser.add_argument('--content_size', type=int, default=0,
+parser.add_argument('--content-size', type=int, default=0,
                     help='New (minimum) size for the content image, \
                     keeping the original size if set to 0')
-parser.add_argument('--style_size', type=int, default=512,
+parser.add_argument('--style-size', type=int, default=512,
                     help='New (minimum) size for the style image, \
                     keeping the original size if set to 0')
 parser.add_argument('--crop', action='store_true',
