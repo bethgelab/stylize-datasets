@@ -6,16 +6,19 @@ Given an image dataset, the script creates the specified number of stylized vers
 Feel free to open an issue in case there is any question.
 
 ## Usage
-- dependencies
+- Dependencies:
     - python >= 3.6
     - Pillow
     - torch
     - torchvision
-    - tqdm
+    - tqdm  
 - Download and convert the models:
     - for this step it is mandatory that your pytorch version is 0.4.0. Run `pip install torch==0.4.0` (preferrably in a container/virtual environment in order to not mess with your local pytorch installation)
     - run `bash download_convert_models.sh`
-- to stylize a dataset, run `python stylize.py`. Arguments:
+    - Get style images: Download train.zip from [Kaggle's painter-by-numbers dataset](https://www.kaggle.com/c/painter-by-numbers/data)
+- To stylize a dataset, run `python stylize.py`.
+
+    Arguments:
     - `--content-dir <CONTENT>` the top-level directory of the content image dataset (mandatory)
     - `--style-dir <STLYE>` the top-level directory of the style images (mandatory)
     - `--output-dir <OUTPUT>` the directory where the stylized dataset will be stored (optional, default: `output/`)
@@ -25,3 +28,9 @@ Feel free to open an issue in case there is any question.
     - `--content-size <N>` Minimum size for content images, resulting in scaling of the shorter side of the content image to `N` (optional, default: `0`). Set this to 0 to keep the original image dimensions.
     - `--style-size <N>` Minimum size for style images, resulting in scaling of the shorter side of the style image to `N` (optional, default: `512`). Set this to 0 to keep the original image dimensions (for large style images, this will result in high (GPU) memory consumption).
     - `--crop` If set, content and style images will be cropped at the center to create square output images
+
+Here is an example call:
+
+```
+ python3 stylize.py --content-dir '/home/username/stylize-datasets/images/' --style-dir '/home/username/stylize-datasets/train/' --num-styles 10 --content_size 0 --style_size 256
+ ```

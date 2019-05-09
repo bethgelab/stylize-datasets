@@ -26,10 +26,10 @@ parser.add_argument('--alpha', type=float, default=1.0,
 parser.add_argument('--extensions', nargs='+', type=str, default=['png', 'jpeg', 'jpg'], help='List of image extensions to scan style and content directory for (case sensitive), default: png, jpeg, jpg')
 
 # Advanced options
-parser.add_argument('--content_size', type=int, default=0,
+parser.add_argument('--content-size', type=int, default=0,
                     help='New (minimum) size for the content image, \
                     keeping the original size if set to 0')
-parser.add_argument('--style_size', type=int, default=512,
+parser.add_argument('--style-size', type=int, default=512,
                     help='New (minimum) size for the style image, \
                     keeping the original size if set to 0')
 parser.add_argument('--crop', action='store_true',
@@ -141,7 +141,7 @@ def main():
                 out_filename = content_name + '-stylized-' + style_name + content_path.suffix
                 output_name = out_dir.joinpath(out_filename)
 
-                save_image(output, output_name)
+                save_image(output, output_name, padding=0) #default image padding is 2.
                 content_img.close()
                 style_img.close()
                 pbar.update(1)
