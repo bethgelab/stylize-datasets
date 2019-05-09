@@ -32,5 +32,5 @@ Feel free to open an issue in case there is any question.
 Here is an example call:
 
 ```
- python3 stylize.py --content-dir '/home/username/stylize-datasets/images/' --style-dir '/home/username/stylize-datasets/train/' --num-styles 10 --content_size 0 --style_size 256
+ python3 stylize.py --content-dir '/home/username/stylize-datasets/images/' --style-dir '/home/username/stylize-datasets/train/' --num-styles 10 --content-size 0 --style-size 256
  ```
