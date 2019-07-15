@@ -111,9 +111,14 @@ def main():
     # actual style transfer as in AdaIN
     with tqdm(total=len(content_paths) * args.num_styles) as pbar:
         for content_path in content_paths:
+            try:
+                content_img = Image.open(content_path).convert('RGB')
+            except OSError as e:
+                print('Skipping stylization of %s due to error below' %(content_path))
+                print(e)
+                continue
             for style_path in random.sample(styles, args.num_styles):
                 try:
-                    content_img = Image.open(content_path).convert('RGB')
                     style_img = Image.open(style_path).convert('RGB')
                 except OSError as e:
                     print('Skipping stylization of %s with %s due to error below' %(content_path, style_path))
@@ -142,9 +147,9 @@ def main():
                 output_name = out_dir.joinpath(out_filename)
 
                 save_image(output, output_name, padding=0) #default image padding is 2.
-                content_img.close()
                 style_img.close()
                 pbar.update(1)
+            content_img.close()
 
 if __name__ == '__main__':
     main()
