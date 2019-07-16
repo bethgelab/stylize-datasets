@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import argparse
-import net
 from pathlib import Path
 from PIL import Image
 import random
@@ -8,7 +7,7 @@ from torchvision.utils import save_image
 from tqdm import tqdm
 from Transferer import StyleTransfer
 
-parser = argparse.ArgumentParser(description='This script applies the AdaIN style transfer method to arbitrary datasets.')
+parser = argparse.ArgumentParser(description='This script applies the AdaIN style transfer method to arbitrary image-containing directories.')
 parser.add_argument('--content-dir', type=str,
                     help='Directory path to a batch of content images')
 parser.add_argument('--style-dir', type=str,

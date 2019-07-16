@@ -78,8 +78,6 @@ class StylizeDataset():
 
         self.seed = seed
 
-        self.copy()
-        self.stylize()
 
     def copy(self):
         if not (self.target_dir.exists()):
@@ -156,7 +154,7 @@ class StylizeDataset():
             style_img.close()
             content_img.close()
 
-def stylize_dataset_from_config(path):
+def get_dataset_from_config(path):
     path = Path(path).resolve()
     if not path.is_file():
         raise FileNotFoundError('File %s does not exist.' %(str(path)))
@@ -168,4 +166,4 @@ def stylize_dataset_from_config(path):
     cfg_dict = {
         name: value for name, value in mod.__dict__.items() if not name.startswith('__')
     }
-    StylizeDataset(**cfg_dict)
+    return StylizeDataset(**cfg_dict)
