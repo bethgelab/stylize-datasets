@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 import argparse
-from function import adaptive_instance_normalization
 import net
 from pathlib import Path
 from PIL import Image
 import random
-import torch
-import torch.nn as nn
-import torchvision.transforms
 from torchvision.utils import save_image
 from tqdm import tqdm
+from Transferer import StyleTransfer
 
 parser = argparse.ArgumentParser(description='This script applies the AdaIN style transfer method to arbitrary datasets.')
 parser.add_argument('--content-dir', type=str,
@@ -36,25 +33,6 @@ parser.add_argument('--crop', action='store_true',
                     help='do center crop to create squared image')
 
 # random.seed(131213)
-
-def input_transform(size, crop):
-    transform_list = []
-    if size != 0:
-        transform_list.append(torchvision.transforms.Resize(size))
-    if crop:
-        transform_list.append(torchvision.transforms.CenterCrop(size))
-    transform_list.append(torchvision.transforms.ToTensor())
-    transform = torchvision.transforms.Compose(transform_list)
-    return transform
-
-def style_transfer(vgg, decoder, content, style, alpha=1.0):
-    assert (0.0 <= alpha <= 1.0)
-    content_f = vgg(content)
-    style_f = vgg(style)
-    feat = adaptive_instance_normalization(content_f, style_f)
-    feat = feat * alpha + content_f * (1 - alpha)
-    return decoder(feat)
-
 def main():
     args = parser.parse_args()
 
@@ -89,24 +67,7 @@ def main():
     styles = sorted(styles)
     print('Found %d style images in %s' % (len(styles), style_dir))
 
-    decoder = net.decoder
-    vgg = net.vgg
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    decoder.eval()
-    vgg.eval()
-
-    decoder.load_state_dict(torch.load('models/decoder.pth'))
-    vgg.load_state_dict(torch.load('models/vgg_normalised.pth'))
-    vgg = nn.Sequential(*list(vgg.children())[:31])
-
-    vgg.to(device)
-    decoder.to(device)
-
-    content_tf = input_transform(args.content_size, args.crop)
-    style_tf = input_transform(args.style_size, args.crop)
-
+    ST = StyleTransfer(alpha=args.alpha, content_size=args.content_size, style_size=args.style_size, crop=args.crop)
 
     # actual style transfer as in AdaIN
     with tqdm(total=len(content_paths) * args.num_styles) as pbar:
@@ -125,14 +86,7 @@ def main():
                     print(e)
                     continue
 
-                content = content_tf(content_img)
-                style = style_tf(style_img)
-                style = style.to(device).unsqueeze(0)
-                content = content.to(device).unsqueeze(0)
-                with torch.no_grad():
-                    output = style_transfer(vgg, decoder, content, style,
-                                            args.alpha)
-                output = output.cpu()
+                stylized = ST.stylize(content_img, style_img)
 
                 rel_path = content_path.relative_to(content_dir)
                 out_dir = output_dir.joinpath(rel_path.parent)
@@ -146,7 +100,7 @@ def main():
                 out_filename = content_name + '-stylized-' + style_name + content_path.suffix
                 output_name = out_dir.joinpath(out_filename)
 
-                save_image(output, output_name, padding=0) #default image padding is 2.
+                save_image(stylized, output_name, padding=0) #default image padding is 2.
                 style_img.close()
                 pbar.update(1)
             content_img.close()

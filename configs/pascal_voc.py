@@ -1,0 +1,12 @@
+dataset_dir = None, #TODO dataset directory: /path/to/pascal_voc
+target_dir = None #TODO output directory: /path/to/pascal_voc_stylized
+style_dir = None #TODO style directory: /path/to/painter_by_numbers
+whitelist = ['VOCdevkit']
+blacklist = None
+image_dirs = ['VOCdevkit/VOC2007/JPEGImages', 'VOCdevkit/VOC2012/JPEGImages']
+content_extensions = ['jpg']
+style_extensions = None #TODO style image extensions, for painter_by_numbers use ['jpg']
+alpha = 1.0
+content_size = 0
+style_size = 512
+seed = None #if you want to obtain reproducible stylization, set the seed to any number you want

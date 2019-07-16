@@ -1,5 +1,15 @@
 import torch
+import torchvision
 
+def input_transform(size, crop):
+    transform_list = []
+    if size != 0:
+        transform_list.append(torchvision.transforms.Resize(size))
+    if crop:
+        transform_list.append(torchvision.transforms.CenterCrop(size))
+    transform_list.append(torchvision.transforms.ToTensor())
+    transform = torchvision.transforms.Compose(transform_list)
+    return transform
 
 def calc_mean_std(feat, eps=1e-5):
     # eps is a small value added to the variance to avoid divide-by-zero.
