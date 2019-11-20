@@ -108,48 +108,57 @@ def main():
     style_tf = input_transform(args.style_size, args.crop)
 
 
+    # disable decompression bomb errors
+    Image.MAX_IMAGE_PIXELS = None
+    skipped_imgs = []
+    
     # actual style transfer as in AdaIN
     with tqdm(total=len(content_paths) * args.num_styles) as pbar:
         for content_path in content_paths:
             try:
                 content_img = Image.open(content_path).convert('RGB')
-            except OSError as e:
-                print('Skipping stylization of %s due to error below' %(content_path))
-                print(e)
-                continue
-            for style_path in random.sample(styles, args.num_styles):
-                try:
+                for style_path in random.sample(styles, args.num_styles):
                     style_img = Image.open(style_path).convert('RGB')
-                except OSError as e:
-                    print('Skipping stylization of %s with %s due to error below' %(content_path, style_path))
-                    print(e)
-                    continue
 
-                content = content_tf(content_img)
-                style = style_tf(style_img)
-                style = style.to(device).unsqueeze(0)
-                content = content.to(device).unsqueeze(0)
-                with torch.no_grad():
-                    output = style_transfer(vgg, decoder, content, style,
-                                            args.alpha)
-                output = output.cpu()
+                    content = content_tf(content_img)
+                    style = style_tf(style_img)
+                    style = style.to(device).unsqueeze(0)
+                    content = content.to(device).unsqueeze(0)
+                    with torch.no_grad():
+                        output = style_transfer(vgg, decoder, content, style,
+                                                args.alpha)
+                    output = output.cpu()
 
-                rel_path = content_path.relative_to(content_dir)
-                out_dir = output_dir.joinpath(rel_path.parent)
+                    rel_path = content_path.relative_to(content_dir)
+                    out_dir = output_dir.joinpath(rel_path.parent)
 
-                # create directory structure if it does not exist
-                if not out_dir.is_dir():
-                    out_dir.mkdir(parents=True)
+                    # create directory structure if it does not exist
+                    if not out_dir.is_dir():
+                        out_dir.mkdir(parents=True)
 
-                content_name = content_path.stem
-                style_name = style_path.stem
-                out_filename = content_name + '-stylized-' + style_name + content_path.suffix
-                output_name = out_dir.joinpath(out_filename)
+                    content_name = content_path.stem
+                    style_name = style_path.stem
+                    out_filename = content_name + '-stylized-' + style_name + content_path.suffix
+                    output_name = out_dir.joinpath(out_filename)
 
-                save_image(output, output_name, padding=0) #default image padding is 2.
-                style_img.close()
+                    save_image(output, output_name, padding=0) #default image padding is 2.
+                    style_img.close()
+                content_img.close()
+            except OSError as e:
+                print('Skipping stylization of %s due to an error' %(content_path))
+                skipped_imgs.append(content_path)
+                continue
+            except RuntimeError as e:
+                print('Skipping stylization of %s due to an error' %(content_path))
+                skipped_imgs.append(content_path)
+                continue
+            finally:
                 pbar.update(1)
-            content_img.close()
+            
+    if(len(skipped_imgs) > 0):
+        with open(output_dir.joinpath('skipped_imgs.txt'), 'w') as f:
+            for item in skipped_imgs:
+                f.write("%s\n" % item)
 
 if __name__ == '__main__':
     main()
