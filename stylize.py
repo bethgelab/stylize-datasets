@@ -113,7 +113,7 @@ def main():
     skipped_imgs = []
     
     # actual style transfer as in AdaIN
-    with tqdm(total=len(content_paths) * args.num_styles) as pbar:
+    with tqdm(total=len(content_paths)) as pbar:
         for content_path in content_paths:
             try:
                 content_img = Image.open(content_path).convert('RGB')
