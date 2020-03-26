@@ -37,7 +37,7 @@ parser.add_argument('--crop', type=int, default=0,
 
 # random.seed(131213)
 
-def input_transform(size, crop):
+def input_transform(size, crop=0):
     transform_list = []
     if size != 0:
         transform_list.append(torchvision.transforms.Resize(size))
@@ -105,7 +105,7 @@ def main():
     decoder.to(device)
 
     content_tf = input_transform(args.content_size, args.crop)
-    style_tf = input_transform(args.style_size, args.crop)
+    style_tf = input_transform(args.style_size)
 
 
     # disable decompression bomb errors
