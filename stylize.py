@@ -106,7 +106,7 @@ def main():
     decoder.to(device)
 
     content_tf = input_transform(args.content_size, args.crop)
-    style_tf = input_transform(args.style_size)
+    style_tf = input_transform(args.style_size, 0)
 
 
     # disable decompression bomb errors
