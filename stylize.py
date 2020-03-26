@@ -33,11 +33,12 @@ parser.add_argument('--style-size', type=int, default=512,
                     help='New (minimum) size for the style image, \
                     keeping the original size if set to 0')
 parser.add_argument('--crop', type=int, default=0,
-                    help='New size for the center crop to create a squared image')
+                    help='If set to anything else than 0, center crop of this size will be applied to the content image \ 
+                    after resizing in order to create a squared image (default: 0)')
 
 # random.seed(131213)
 
-def input_transform(size, crop=0):
+def input_transform(size, crop):
     transform_list = []
     if size != 0:
         transform_list.append(torchvision.transforms.Resize(size))
