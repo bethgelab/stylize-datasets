@@ -1,0 +1,5 @@
+python >= 3.6
+Pillow
+torch
+torchvision
+tqdm
