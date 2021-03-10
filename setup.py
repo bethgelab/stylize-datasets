@@ -2,9 +2,8 @@ from setuptools import setup
 
 setup(
     name='stylize-datasets',
-    version='1.0',
+    version='0.1.0',
     packages=[''],
-    scripts=['models/download_models.sh'],
     url='https://github.com/bethgelab/stylize-datasets',
     license='MIT License',
     author='',
