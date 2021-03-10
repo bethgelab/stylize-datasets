@@ -112,7 +112,7 @@ def main():
     # disable decompression bomb errors
     Image.MAX_IMAGE_PIXELS = None
     skipped_imgs = []
-    
+
     # actual style transfer as in AdaIN
     with tqdm(total=len(content_paths)) as pbar:
         for content_path in content_paths:
@@ -155,7 +155,7 @@ def main():
                 continue
             finally:
                 pbar.update(1)
-            
+
     if(len(skipped_imgs) > 0):
         with open(output_dir.joinpath('skipped_imgs.txt'), 'w') as f:
             for item in skipped_imgs:

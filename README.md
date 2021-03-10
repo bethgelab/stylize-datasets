@@ -13,7 +13,7 @@ Feel free to open an issue in case there is any question.
     - torchvision
     - tqdm  
 - Download the models:
-    - either run run `bash models/download_models.sh` or download the models manually from [vgg](https://drive.google.com/file/d/108uza-dsmwvbW2zv-G73jtVcMU_2Nb7Y/view)/[decoder](https://drive.google.com/file/d/1w9r1NoYnn7tql1VYG3qDUzkbIks24RBQ/view) and move both files to the `models/` directory
+    - download the models (vgg/decoder) manually from [pytorch-AdaIN](https://github.com/naoto0804/pytorch-AdaIN) and move both files to the `models/` directory
     - Get style images: Download train.zip from [Kaggle's painter-by-numbers dataset](https://www.kaggle.com/c/painter-by-numbers/data)
 - To stylize a dataset, run `python stylize.py`.
 
