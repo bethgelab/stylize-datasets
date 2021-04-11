@@ -21,6 +21,8 @@ parser.add_argument('--output-dir', type=str, default='output',
                     help='Directory to save the output images')
 parser.add_argument('--num-styles', type=int, default=1, help='Number of styles to \
                         create for each image (default: 1)')
+parser.add_argument('--style-map', type=str, default=None, help='An explicit content-style map \
+                        that is used instead of random sampling. Num styles is ignored in this case.')
 parser.add_argument('--alpha', type=float, default=1.0,
                     help='The weight that controls the degree of \
                           stylization. Should be between 0 and 1')
@@ -105,12 +107,19 @@ def main():
     style_filenames   = list(style_files.keys())
 
     # create the content to style mappings
-    style_map = {}
-    for c in content_filenames:
-        style_list = []
-        for s in random.sample(style_filenames, args.num_styles):
-            style_list.append(s)
-        style_map[c] = style_list
+    if args.style_map is None:
+        print('Create new content-style map with %d random styles per content image.' % args.num_styles)
+        style_map = {}
+        for c in content_filenames:
+            style_list = []
+            for s in random.sample(style_filenames, args.num_styles):
+                style_list.append(s)
+            style_map[c] = style_list
+    else:
+        style_map_path = Path(args.style_map).resolve()
+        print('Load content-style map from %s' % style_map_path)
+        with open(style_map_path) as f:
+            style_map = json.load(f)
 
     # ensure that content and style files exist (e.g. when using an explicit content-style-map)
     for c, s_list in style_map.items():
