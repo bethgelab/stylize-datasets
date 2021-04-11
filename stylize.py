@@ -186,7 +186,7 @@ def main():
             finally:
                 pbar.update(1)
 
-    with open(output_dir.joinpath('style_map.json'), 'w') as f:
+    with open(output_dir.joinpath('content_style_map.json'), 'w') as f:
         json.dump(style_map, f)
 
     if(len(skipped_imgs) > 0):
