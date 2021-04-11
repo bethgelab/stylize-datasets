@@ -88,8 +88,35 @@ def main():
         styles += list(style_dir.rglob('*.' + ext))
 
     assert len(styles) > 0, 'No images with specified extensions found in style directory' + style_dir
-    styles = sorted(styles)
-    print('Found %d style images in %s' % (len(styles), style_dir))
+    style_paths = sorted(styles)
+    print('Found %d style images in %s' % (len(style_paths), style_dir))
+
+    # convert to dicts so we can access the actual file paths by the file names
+    content_files = {}
+    style_files = {}
+
+    for cp in content_paths:
+        content_files[cp.name] = cp
+
+    for sp in style_paths:
+        style_files[sp.name] = sp
+
+    content_filenames = list(content_files.keys())
+    style_filenames   = list(style_files.keys())
+
+    # create the content to style mappings
+    style_map = {}
+    for c in content_filenames:
+        style_list = []
+        for s in random.sample(style_filenames, args.num_styles):
+            style_list.append(s)
+        style_map[c] = style_list
+
+    # ensure that content and style files exist (e.g. when using an explicit content-style-map)
+    for c, s_list in style_map.items():
+        assert c in content_filenames, 'Content file %s not found in content directory %s' % (c, content_dir)
+        for s in s_list:
+            assert s in style_filenames, 'Style file %s not found in style directory %s' % (s, style_dir)
 
     decoder = net.decoder
     vgg = net.vgg
@@ -113,17 +140,16 @@ def main():
     # disable decompression bomb errors
     Image.MAX_IMAGE_PIXELS = None
     skipped_imgs = []
-    style_map = {}
 
     # actual style transfer as in AdaIN
-    with tqdm(total=len(content_paths)) as pbar:
-        for content_path in content_paths:
-            used_styles = []
+    with tqdm(total=len(style_map.keys())) as pbar:
+        for c, s_list in style_map.items():
+            content_path = content_files[c]
             try:
                 content_img = Image.open(content_path).convert('RGB')
-                for style_path in random.sample(styles, args.num_styles):
+                for s in style_list:
+                    style_path = style_files[s]
                     style_img = Image.open(style_path).convert('RGB')
-                    used_styles.append(style_path.name)
 
                     content = content_tf(content_img)
                     style = style_tf(style_img)
@@ -149,7 +175,6 @@ def main():
                     save_image(output, output_name, padding=0) #default image padding is 2.
                     style_img.close()
                 content_img.close()
-                style_map[content_path.name] = used_styles
             except OSError as e:
                 print('Skipping stylization of %s due to an error' %(content_path))
                 skipped_imgs.append(content_path)
