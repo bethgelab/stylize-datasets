@@ -10,6 +10,7 @@ import torch.nn as nn
 import torchvision.transforms
 from torchvision.utils import save_image
 from tqdm import tqdm
+import json
 
 parser = argparse.ArgumentParser(description='This script applies the AdaIN style transfer method to arbitrary datasets.')
 parser.add_argument('--content-dir', type=str,
@@ -112,14 +113,17 @@ def main():
     # disable decompression bomb errors
     Image.MAX_IMAGE_PIXELS = None
     skipped_imgs = []
+    style_map = {}
 
     # actual style transfer as in AdaIN
     with tqdm(total=len(content_paths)) as pbar:
         for content_path in content_paths:
+            used_styles = []
             try:
                 content_img = Image.open(content_path).convert('RGB')
                 for style_path in random.sample(styles, args.num_styles):
                     style_img = Image.open(style_path).convert('RGB')
+                    used_styles.append(style_path.name)
 
                     content = content_tf(content_img)
                     style = style_tf(style_img)
@@ -145,6 +149,7 @@ def main():
                     save_image(output, output_name, padding=0) #default image padding is 2.
                     style_img.close()
                 content_img.close()
+                style_map[content_path.name] = used_styles
             except OSError as e:
                 print('Skipping stylization of %s due to an error' %(content_path))
                 skipped_imgs.append(content_path)
@@ -155,6 +160,9 @@ def main():
                 continue
             finally:
                 pbar.update(1)
+
+    with open(output_dir.joinpath('style_map.json'), 'w') as f:
+        json.dump(style_map, f)
 
     if(len(skipped_imgs) > 0):
         with open(output_dir.joinpath('skipped_imgs.txt'), 'w') as f:
