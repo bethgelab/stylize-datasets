@@ -143,7 +143,7 @@ def main():
 
     # actual style transfer as in AdaIN
     with tqdm(total=len(style_map.keys())) as pbar:
-        for c, s_list in style_map.items():
+        for c, style_list in style_map.items():
             content_path = content_files[c]
             try:
                 content_img = Image.open(content_path).convert('RGB')
