@@ -36,7 +36,7 @@ Here is an example call:
 
 ## Citation
 
-If you this code, please consider citing:
+If you use this code, please consider citing:
 ```
 @article{michaelis2019dragon,
   title={Benchmarking Robustness in Object Detection: 
