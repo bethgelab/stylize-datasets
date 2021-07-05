@@ -33,3 +33,19 @@ Here is an example call:
 ```
  python3 stylize.py --content-dir '/home/username/stylize-datasets/images/' --style-dir '/home/username/stylize-datasets/train/' --num-styles 10 --content_size 0 --style_size 256
  ```
+
+## Citation
+
+If you use this code, please consider citing:
+```
+@article{michaelis2019dragon,
+  title={Benchmarking Robustness in Object Detection: 
+    Autonomous Driving when Winter is Coming},
+  author={Michaelis, Claudio and Mitzkus, Benjamin and 
+    Geirhos, Robert and Rusak, Evgenia and 
+    Bringmann, Oliver and Ecker, Alexander S. and 
+    Bethge, Matthias and Brendel, Wieland},
+  journal={arXiv preprint arXiv:1907.07484},
+  year={2019}
+}
+```
