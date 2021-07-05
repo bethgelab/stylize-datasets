@@ -10,6 +10,7 @@ import torch.nn as nn
 import torchvision.transforms
 from torchvision.utils import save_image
 from tqdm import tqdm
+import json
 
 parser = argparse.ArgumentParser(description='This script applies the AdaIN style transfer method to arbitrary datasets.')
 parser.add_argument('--content-dir', type=str,
@@ -20,6 +21,8 @@ parser.add_argument('--output-dir', type=str, default='output',
                     help='Directory to save the output images')
 parser.add_argument('--num-styles', type=int, default=1, help='Number of styles to \
                         create for each image (default: 1)')
+parser.add_argument('--style-map', type=str, default=None, help='An explicit content-style map \
+                        that is used instead of random sampling. Num styles is ignored in this case.')
 parser.add_argument('--alpha', type=float, default=1.0,
                     help='The weight that controls the degree of \
                           stylization. Should be between 0 and 1')
@@ -87,8 +90,42 @@ def main():
         styles += list(style_dir.rglob('*.' + ext))
 
     assert len(styles) > 0, 'No images with specified extensions found in style directory' + style_dir
-    styles = sorted(styles)
-    print('Found %d style images in %s' % (len(styles), style_dir))
+    style_paths = sorted(styles)
+    print('Found %d style images in %s' % (len(style_paths), style_dir))
+
+    # convert to dicts so we can access the actual file paths by the file names
+    content_files = {}
+    style_files = {}
+
+    for cp in content_paths:
+        content_files[cp.name] = cp
+
+    for sp in style_paths:
+        style_files[sp.name] = sp
+
+    content_filenames = list(content_files.keys())
+    style_filenames   = list(style_files.keys())
+
+    # create the content to style mappings
+    if args.style_map is None:
+        print('Create new content-style map with %d random styles per content image.' % args.num_styles)
+        style_map = {}
+        for c in content_filenames:
+            style_list = []
+            for s in random.sample(style_filenames, args.num_styles):
+                style_list.append(s)
+            style_map[c] = style_list
+    else:
+        style_map_path = Path(args.style_map).resolve()
+        print('Load content-style map from %s' % style_map_path)
+        with open(style_map_path) as f:
+            style_map = json.load(f)
+
+    # ensure that content and style files exist (e.g. when using an explicit content-style-map)
+    for c, s_list in style_map.items():
+        assert c in content_filenames, 'Content file %s not found in content directory %s' % (c, content_dir)
+        for s in s_list:
+            assert s in style_filenames, 'Style file %s not found in style directory %s' % (s, style_dir)
 
     decoder = net.decoder
     vgg = net.vgg
@@ -114,11 +151,13 @@ def main():
     skipped_imgs = []
 
     # actual style transfer as in AdaIN
-    with tqdm(total=len(content_paths)) as pbar:
-        for content_path in content_paths:
+    with tqdm(total=len(style_map.keys())) as pbar:
+        for c, style_list in style_map.items():
+            content_path = content_files[c]
             try:
                 content_img = Image.open(content_path).convert('RGB')
-                for style_path in random.sample(styles, args.num_styles):
+                for s in style_list:
+                    style_path = style_files[s]
                     style_img = Image.open(style_path).convert('RGB')
 
                     content = content_tf(content_img)
@@ -155,6 +194,9 @@ def main():
                 continue
             finally:
                 pbar.update(1)
+
+    with open(output_dir.joinpath('content_style_map.json'), 'w') as f:
+        json.dump(style_map, f)
 
     if(len(skipped_imgs) > 0):
         with open(output_dir.joinpath('skipped_imgs.txt'), 'w') as f:

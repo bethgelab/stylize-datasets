@@ -22,11 +22,21 @@ Feel free to open an issue in case there is any question.
     - `--style-dir <STLYE>` the top-level directory of the style images (mandatory)
     - `--output-dir <OUTPUT>` the directory where the stylized dataset will be stored (optional, default: `output/`)
     - `--num-styles <N>` number of stylizations to create for each content image (optional, default: `1`)
+    - `--style-map <STYLE_MAP>` an explicit content style map json. If provided, num-styles will be ignored (optional, default: `None`)
     - `--alpha <A>` Weight that controls the strength of stylization, should be between 0 and 1 (optional, default: `1`)
     - `--extensions <EX0> <EX1> ...` list of image extensions to scan style and content directory for (optional, default: `png, jpeg, jpg`). Note: this is case sensitive, `--extensions jpg` will not scan for files ending on `.JPG`. Image types must be compatible with PIL's `Image.open()` ([Documentation](https://pillow.readthedocs.io/en/5.1.x/handbook/image-file-formats.html))
     - `--content-size <N>` Minimum size for content images, resulting in scaling of the shorter side of the content image to `N` (optional, default: `0`). Set this to 0 to keep the original image dimensions.
     - `--style-size <N>` Minimum size for style images, resulting in scaling of the shorter side of the style image to `N` (optional, default: `512`). Set this to 0 to keep the original image dimensions (for large style images, this will result in high (GPU) memory consumption).
     - `--crop <N>` Size for the center crop applied to the content image in order to create a squared image (optional, default 0). Setting this to 0 will disable the cropping.
+
+The chosen styles per content image will be saved in a `content_style_map.json`. This file can be used with the `--style-map` argument to reproduce a specific dataset or to create an explicit content style mapping manually. Keys and values must be existing file names in the `--content-dir` and `--style-dir` respectively.
+
+```json
+{ 
+    "content_image_1.jpg": ["style_1.jpg"],
+    "content_image_2.jpg": ["style_2.jpg", "style_3.jpg"]
+}
+```
 
 Here is an example call:
 
